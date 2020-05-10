@@ -29,6 +29,7 @@ class Paint():
         # Adding widgets to tkinter window
         self.color_frame = LabelFrame(self.root, bd=4, relief=RIDGE, bg="white")
         self.color_frame.grid(row=0, column=0,pady=(5,0))
+        self.color_frame_tooltip = CreateToolTip(self.color_frame, 'Select Brush Color')
         self.color_frame.config(cursor="hand2")
 
         colors = ['#800000', '#FF0000', '#FFA500', '#FFFF00', '#808000', '#800080', '#FF00FF', '#808080', '#00FF00', '#008000', '#000080', '#0000FF', '#00FFFF', '#008080', '#000000', '#C0C0C0']
