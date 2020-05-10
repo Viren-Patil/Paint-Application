@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter.ttk import Scale
 from tkinter import colorchooser, filedialog, messagebox
 import PIL.ImageGrab as ImageGrab
+from PIL import ImageTk, Image
 
 class Paint():
     
@@ -16,23 +17,24 @@ class Paint():
         self.old_x = None
         self.old_y = None
 
+        self.width_val = self.root.winfo_screenwidth()
+        self.height_val = self.root.winfo_screenheight()
+
         self.pen_color = 'black'
         self.eraser_color = 'white'
         self.save_color = self.pen_color
 
         # Adding widgets to tkinter window
         self.color_frame = LabelFrame(self.root, bd=4, relief=RIDGE, bg="white")
-        #self.color_frame.place(x=0, y=0, width=70, height=165)
         self.color_frame.grid(row=0, column=0)
-        #self.color_frame.pack()
-
+        
 
         colors = ['#ff0000', '#ff4dd2', '#ffff33', '#000000', '#0066ff', '#660033', '#4dff4d', '#b300b3', '#00ffff', '#808080', '#99ffcc', '#0a2642']
         i = j = 0
         for color in colors:
             Button(self.color_frame, bg=color, bd=2, relief=RIDGE, width=3, command=lambda col= color:self.select_color(col)).grid(row=i, column=j)
             i += 1
-            if i==6:
+            if i==7:
                 i = 0
                 j += 1
 
@@ -54,10 +56,6 @@ class Paint():
         self.pencil_button = Button(self.root, text='Pencil', bd=4, bg='white', command=self._pencil, width=8, relief = RIDGE)
         self.pencil_button.grid(row=6, column=0)
         
-        # self.canvas_color_button = Button(self.root, text='Canvas', bd=4, bg='white', command=self.canvas_color, width=8, relief = RIDGE)
-        # #self.canvas_color_button.place(x=0, y=277)
-        # self.canvas_color_button.grid(row=2, column=0)
-        # #self.canvas_color_button.pack()
 
         # Creating a Scale for pen and eraser size...
 
@@ -70,7 +68,7 @@ class Paint():
 
         # Creating Canvas
 
-        self.canvas = Canvas(self.root, bg='white', bd=5, relief=GROOVE, height=785, width=1435, cursor="crosshair")
+        self.canvas = Canvas(self.root, bg='white', relief=GROOVE, height=self.height_val, width=self.width_val, cursor="crosshair")
         self.canvas.place(x=70, y=0)
         
         # Binding the canvas with the mouse drag
@@ -256,10 +254,6 @@ class Paint():
 
         try:
             filename = filedialog.asksaveasfilename(defaultextension = '.jpg')
-            x = self.root.winfo_rootx() + self.canvas.winfo_x()
-            y = self.root.winfo_rooty() + self.canvas.winfo_y()
-            x1 = x + self.canvas.winfo_width()
-            y1 = y + self.canvas.winfo_height()
             ImageGrab.grab().save(filename)
             messagebox.showinfo('Paint says', 'image is saved as ' + str(filename))
             
@@ -271,10 +265,6 @@ class Paint():
 
         try:
             filename = filedialog.asksaveasfilename(defaultextension = '.jpg')
-            x = self.root.winfo_rootx() + self.canvas.winfo_x()
-            y = self.root.winfo_rooty() + self.canvas.winfo_y()
-            x1 = x + self.canvas.winfo_width()
-            y1 = y + self.canvas.winfo_height()
             ImageGrab.grab().save(filename)
             messagebox.showinfo('Paint says', 'image is saved as ' + str(filename))
             self.root.destroy()
