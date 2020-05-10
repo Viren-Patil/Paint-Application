@@ -359,9 +359,7 @@ class Paint():
 
 
 class CreateToolTip(object):
-    """
-    create a tooltip for a given widget
-    """
+    
     def __init__(self, widget, text='widget info'):
         self.waittime = 500     #miliseconds
         self.wraplength = 180   #pixels
