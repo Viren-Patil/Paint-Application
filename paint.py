@@ -25,8 +25,10 @@ class Paint():
         self.pen_color = 'black'
         self.eraser_color = 'white'
         self.save_color = self.pen_color
+        self.choice = 'Pencil'
 
         # Adding widgets to tkinter window
+
         self.color_frame = LabelFrame(self.root, bd=4, relief=RIDGE, bg="white")
         self.color_frame.grid(row=0, column=0,pady=(5,0))
         self.color_frame_tooltip = CreateToolTip(self.color_frame, 'Select Brush Color')
@@ -93,9 +95,9 @@ class Paint():
         # Creating a Scale for pen and eraser size...
 
         self.pen_size_scale_frame = Frame(self.root, bd=5, bg='lightblue', relief=RIDGE)
-        self.pen_size_scale_frame.grid(row=9, column=0,  pady=5)
+        self.pen_size_scale_frame.grid(row=8, column=0,  pady=5)
         
-        self.pen_size = Scale(self.pen_size_scale_frame, orient = VERTICAL, from_ = 60, to = 2, length=180)
+        self.pen_size = Scale(self.pen_size_scale_frame, orient = VERTICAL, from_ = 50, to = 2, length=200)
         self.pen_size_tooltip = CreateToolTip(self.pen_size, 'Adjust the size of pen and eraser using this slider.')
         self.pen_size.set(1)
         self.pen_size.grid(row=0, column=1, padx=15, pady=5)
@@ -107,9 +109,11 @@ class Paint():
         self.canvas.place(x=70, y=0)
         
         # Binding the canvas with the mouse drag
-
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<ButtonRelease-1>", self.reset)
+
+        self.msg = tk.Message(self.root, text = self.choice)
+        self.msg.grid(row = 9, column = 0, pady = (20, 0))
         
 
         menu = Menu(self.root)
@@ -130,7 +134,12 @@ class Paint():
 
     # Function definitions
 
+    def choice_disp(self):
+        self.msg.config(text = self.choice)
+
     def _createRectangle(self):
+        self.choice = 'Rectangle/\nSquare'
+        self.choice_disp()
         self.rectx0 = 0
         self.recty0 = 0
         self.rectx1 = 0
@@ -175,6 +184,8 @@ class Paint():
 
 
     def _createOval(self):
+        self.choice = 'Oval and\nCircle'
+        self.choice_disp()
         self.ovalx0 = 0
         self.ovaly0 = 0
         self.ovalx1 = 0
@@ -219,6 +230,8 @@ class Paint():
 
 
     def _createLine(self):
+        self.choice = 'Line'
+        self.choice_disp()
         self.linex0 = 0
         self.liney0 = 0
         self.linex1 = 0
@@ -262,6 +275,8 @@ class Paint():
 
 
     def _pencil(self):
+        self.choice = 'Pencil'
+        self.choice_disp()
         self.pen_color = self.save_color
         self.canvas.config(cursor="crosshair")
         self.canvas.unbind("<Button-1>")
@@ -318,6 +333,8 @@ class Paint():
         self.save_color = col
 
     def eraser(self):
+        self.choice = 'Eraser'
+        self.choice_disp()
         self.canvas.config(cursor="dotbox")
         self.canvas.unbind("<Button-1>")
         self.canvas.unbind("<ButtonRelease-1>")
