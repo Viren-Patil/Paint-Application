@@ -254,13 +254,17 @@ class Paint():
         if(self.item == 0):     # For undoing figures like rectangle, oval, circle, square, straight lines.
             self.item = self.stack.pop()
             self.canvas.delete(self.item)
-        
-        else:    # For undoing freehand pencil drawing
-            self.canvas.delete(self.item)
+
+        elif(self.item == 1):
             self.item = self.stack.pop()
-            while(self.item != 0 or len(self.stack) != 0):
+            while(self.item != 1 and self.item != 0):
                 self.canvas.delete(self.item)
+                if len(self.stack) == 0:
+                    break
                 self.item = self.stack.pop()
+            
+            if self.item == 1 or self.item == 0:
+                self.stack.append(self.item)
 
     # def redo(self):
     #     self.item = self.stack.pop()
@@ -283,6 +287,7 @@ class Paint():
         
         self.old_x = None
         self.old_y = None
+        self.stack.append(1)
 
 
     def select_color(self, col):
