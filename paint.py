@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.ttk import Scale
 from tkinter import colorchooser, filedialog, messagebox
-#from idlelib.ToolTip import *
+import tkinter as tk
 import PIL.ImageGrab as ImageGrab
 from PIL import ImageTk, Image
 
@@ -44,36 +44,43 @@ class Paint():
         self.clear_button = Button(self.root, image=self.clear_image, command=self.clear, width=64)
         self.clear_button.grid(row=1, column=0, pady=(5,0))
         self.clear_button.config(cursor="hand2")
+        self.clear_button_tooltip = CreateToolTip(self.clear_button, 'Clear the Canvas')
         
         self.eraser_image = PhotoImage(file='eraser.png')
         self.eraser_button = Button(self.root, image = self.eraser_image, command=self.eraser, width = 64)
         self.eraser_button.grid(row=2, column=0)
         self.eraser_button.config(cursor="hand2")
+        self.eraser_button_tooltip = CreateToolTip(self.eraser_button, 'Eraser')
        
         self.line_image = PhotoImage(file='line.png')
         self.line_button = Button(self.root, image=self.line_image, command=self._createLine, width=64)
         self.line_button.grid(row=3, column=0)
         self.line_button.config(cursor="hand2")
+        self.line_button_tooltip = CreateToolTip(self.line_button, 'Straight Line')
         
         self.rectangle_image = PhotoImage(file='rectangle.png')
         self.rectangle_button = Button(self.root, image=self.rectangle_image, command=self._createRectangle, width=64)
         self.rectangle_button.grid(row=4, column=0)
         self.rectangle_button.config(cursor="hand2")
+        self.rectangle_button_tooltip = CreateToolTip(self.rectangle_button, 'Rectangle and Square')
 
         self.oval_image = PhotoImage(file='oval.png')
         self.oval_button = Button(self.root, image=self.oval_image, command=self._createOval, width=64)
         self.oval_button.grid(row=5, column=0)
         self.oval_button.config(cursor="hand2")
+        self.oval_button_tooltip = CreateToolTip(self.oval_button, 'Oval and Circle')
 
         self.pencil_image = PhotoImage(file='pencil.png')
         self.pencil_button = Button(self.root, image=self.pencil_image, command=self._pencil, width=64)
         self.pencil_button.grid(row=6, column=0)
         self.pencil_button.config(cursor="hand2")
+        self.pencil_button_tooltip = CreateToolTip(self.pencil_button, 'Pencil')
 
         self.undo_image = PhotoImage(file='undo.png')
         self.undo_button = Button(self.root, image=self.undo_image, command=self.undo, width=64)
         self.undo_button.grid(row=7, column=0)
         self.undo_button.config(cursor="hand2")
+        self.undo_button_tooltip = CreateToolTip(self.undo_button, 'Undo')
 
         # self.redo_image = PhotoImage(file='redo.png')
         # self.redo_button = Button(self.root, image=self.redo_image, command=self.redo, width=64)
@@ -88,6 +95,7 @@ class Paint():
         self.pen_size_scale_frame.grid(row=9, column=0,  pady=5)
         
         self.pen_size = Scale(self.pen_size_scale_frame, orient = VERTICAL, from_ = 60, to = 2, length=180)
+        self.pen_size_tooltip = CreateToolTip(self.pen_size, 'Adjust the size of pen and eraser using this slider.')
         self.pen_size.set(1)
         self.pen_size.grid(row=0, column=1, padx=15, pady=5)
         self.pen_size.config(cursor="hand2")
@@ -262,6 +270,7 @@ class Paint():
         self.canvas.bind("<ButtonRelease-1>", self.reset)
 
     def undo(self):
+
         self.item = self.stack.pop()
 
         if(self.item == '$'):     # For undoing figures like rectangle, oval, circle, square, straight lines.
@@ -347,6 +356,60 @@ class Paint():
 
         except:
             messagebox.showerror('Paint says', 'unable to save image, \n something went wrong')
+
+
+class CreateToolTip(object):
+    """
+    create a tooltip for a given widget
+    """
+    def __init__(self, widget, text='widget info'):
+        self.waittime = 500     #miliseconds
+        self.wraplength = 180   #pixels
+        self.widget = widget
+        self.text = text
+        self.widget.bind("<Enter>", self.enter)
+        self.widget.bind("<Leave>", self.leave)
+        self.widget.bind("<ButtonPress>", self.leave)
+        self.id = None
+        self.tw = None
+
+    def enter(self, event=None):
+        self.schedule()
+
+    def leave(self, event=None):
+        self.unschedule()
+        self.hidetip()
+
+    def schedule(self):
+        self.unschedule()
+        self.id = self.widget.after(self.waittime, self.showtip)
+
+    def unschedule(self):
+        id = self.id
+        self.id = None
+        if id:
+            self.widget.after_cancel(id)
+
+    def showtip(self, event=None):
+        x = y = 0
+        x, y, cx, cy = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + 55
+        y += self.widget.winfo_rooty() + 20
+        # creates a toplevel window
+        self.tw = tk.Toplevel(self.widget)
+        # Leaves only the label and removes the app window
+        self.tw.wm_overrideredirect(True)
+        self.tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(self.tw, text=self.text, justify='left',
+                       background="#ffffff", relief='solid', borderwidth=1,
+                       wraplength = self.wraplength)
+        label.pack(ipadx=1)
+
+    def hidetip(self):
+        tw = self.tw
+        self.tw= None
+        if tw:
+            tw.destroy()
 
 
 if __name__ == "__main__":
