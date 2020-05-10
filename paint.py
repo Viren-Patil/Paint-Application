@@ -26,45 +26,58 @@ class Paint():
 
         # Adding widgets to tkinter window
         self.color_frame = LabelFrame(self.root, bd=4, relief=RIDGE, bg="white")
-        self.color_frame.grid(row=0, column=0)
-        
+        self.color_frame.grid(row=0, column=0,pady=(5,0))
+        self.color_frame.config(cursor="hand2")
 
-        colors = ['#ff0000', '#ff4dd2', '#ffff33', '#000000', '#0066ff', '#660033', '#4dff4d', '#b300b3', '#00ffff', '#808080', '#99ffcc', '#0a2642']
+        colors = ['#800000', '#FF0000', '#FFA500', '#FFFF00', '#808000', '#800080', '#FF00FF', '#808080', '#00FF00', '#008000', '#000080', '#0000FF', '#00FFFF', '#008080', '#000000', '#C0C0C0']
         i = j = 0
         for color in colors:
             Button(self.color_frame, bg=color, bd=2, relief=RIDGE, width=3, command=lambda col= color:self.select_color(col)).grid(row=i, column=j)
             i += 1
-            if i==7:
+            if i==8:
                 i = 0
                 j += 1
 
-        self.clear_button = Button(self.root, text='Clear', bd=4, bg='white', command=self.clear, width=8, relief = RIDGE)
-        self.clear_button.grid(row=1, column=0)
+        self.clear_image = PhotoImage(file='signs.png')
+        self.clear_button = Button(self.root, image=self.clear_image, command=self.clear, width=64)
+        self.clear_button.grid(row=1, column=0, pady=(5,0))
+        self.clear_button.config(cursor="hand2")
         
-        self.eraser_button = Button(self.root, text='Eraser', bd=4, bg='white', command=self.eraser, width=8, relief = RIDGE)
+        self.eraser_image = PhotoImage(file='eraser.png')
+        self.eraser_button = Button(self.root, image = self.eraser_image, command=self.eraser, width = 64)
         self.eraser_button.grid(row=2, column=0)
+        self.eraser_button.config(cursor="hand2")
        
-        self.line_button = Button(self.root, text='Line', bd=4, bg='white', command=self._createLine, width=8, relief = RIDGE)
+        self.line_image = PhotoImage(file='line.png')
+        self.line_button = Button(self.root, image=self.line_image, command=self._createLine, width=64)
         self.line_button.grid(row=3, column=0)
+        self.line_button.config(cursor="hand2")
         
-        self.rectangle_button = Button(self.root, text='Rectangle', bd=4, bg='white', command=self._createRectangle, width=8, relief = RIDGE)
+        self.rectangle_image = PhotoImage(file='rectangle.png')
+        self.rectangle_button = Button(self.root, image=self.rectangle_image, command=self._createRectangle, width=64)
         self.rectangle_button.grid(row=4, column=0)
+        self.rectangle_button.config(cursor="hand2")
 
-        self.oval_button = Button(self.root, text='Oval', bd=4, bg='white', command=self._createOval, width=8, relief = RIDGE)
+        self.oval_image = PhotoImage(file='oval.png')
+        self.oval_button = Button(self.root, image=self.oval_image, command=self._createOval, width=64)
         self.oval_button.grid(row=5, column=0)
+        self.oval_button.config(cursor="hand2")
 
-        self.pencil_button = Button(self.root, text='Pencil', bd=4, bg='white', command=self._pencil, width=8, relief = RIDGE)
+        self.pencil_image = PhotoImage(file='pencil.png')
+        self.pencil_button = Button(self.root, image=self.pencil_image, command=self._pencil, width=64)
         self.pencil_button.grid(row=6, column=0)
+        self.pencil_button.config(cursor="hand2")
         
 
         # Creating a Scale for pen and eraser size...
 
-        self.pen_size_scale_frame = Frame(self.root, bd=5, bg='white', relief=RIDGE)
-        self.pen_size_scale_frame.grid(row=7, column=0)
+        self.pen_size_scale_frame = Frame(self.root, bd=5, bg='lightblue', relief=RIDGE)
+        self.pen_size_scale_frame.grid(row=7, column=0,  pady=5)
         
         self.pen_size = Scale(self.pen_size_scale_frame, orient = VERTICAL, from_ = 60, to = 2, length=180)
         self.pen_size.set(1)
         self.pen_size.grid(row=0, column=1, padx=15, pady=5)
+        self.pen_size.config(cursor="hand2")
 
         # Creating Canvas
 
