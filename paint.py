@@ -129,9 +129,13 @@ class Paint():
         self.rectid = None
         self.pen_color = self.save_color
         self.canvas.config(cursor="fleur")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
         self.canvas.bind( "<Button-1>", self.startRect )
         self.canvas.bind( "<ButtonRelease-1>", self.stopRect )
         self.canvas.bind( "<B1-Motion>", self.movingRect )
+
 
     def startRect(self, event):
         #Translate mouse screen x0,y0 coordinates to canvas coordinates
@@ -158,7 +162,7 @@ class Paint():
                       self.rectx1, self.recty1)
 
         self.stack.append(self.rectid)
-        self.stack.append(0)            # Delimeter
+        self.stack.append('$')            # Delimeter
 
 
     def _createOval(self):
@@ -169,6 +173,9 @@ class Paint():
         self.ovalid = None
         self.pen_color = self.save_color
         self.canvas.config(cursor="fleur")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
         self.canvas.bind( "<Button-1>", self.startOval )
         self.canvas.bind( "<ButtonRelease-1>", self.stopOval )
         self.canvas.bind( "<B1-Motion>", self.movingOval )
@@ -199,7 +206,7 @@ class Paint():
                       self.ovalx1, self.ovaly1)
 
         self.stack.append(self.ovalid)
-        self.stack.append(0)            # Delimeter
+        self.stack.append('$')            # Delimeter
 
 
     def _createLine(self):
@@ -210,6 +217,9 @@ class Paint():
         self.lineid = None
         self.pen_color = self.save_color
         self.canvas.config(cursor="tcross")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
         self.canvas.bind( "<Button-1>", self.startLine )
         self.canvas.bind( "<ButtonRelease-1>", self.stopLine )
         self.canvas.bind( "<B1-Motion>", self.movingLine )
@@ -239,31 +249,34 @@ class Paint():
                       self.linex1, self.liney1)
         
         self.stack.append(self.lineid)
-        self.stack.append(0)            # Delimeter
+        self.stack.append('$')            # Delimeter
 
 
     def _pencil(self):
         self.pen_color = self.save_color
         self.canvas.config(cursor="crosshair")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<ButtonRelease-1>", self.reset)
 
     def undo(self):
         self.item = self.stack.pop()
 
-        if(self.item == 0):     # For undoing figures like rectangle, oval, circle, square, straight lines.
+        if(self.item == '$'):     # For undoing figures like rectangle, oval, circle, square, straight lines.
             self.item = self.stack.pop()
             self.canvas.delete(self.item)
 
-        elif(self.item == 1):
+        elif(self.item == '#'):
             self.item = self.stack.pop()
-            while(self.item != 1 and self.item != 0):
+            while(self.item != '#' and self.item != '$'):
                 self.canvas.delete(self.item)
                 if len(self.stack) == 0:
                     break
                 self.item = self.stack.pop()
             
-            if self.item == 1 or self.item == 0:
+            if self.item == '#' or self.item == '$':
                 self.stack.append(self.item)
 
     # def redo(self):
@@ -287,7 +300,7 @@ class Paint():
         
         self.old_x = None
         self.old_y = None
-        self.stack.append(1)
+        self.stack.append('#')
 
 
     def select_color(self, col):
@@ -296,6 +309,9 @@ class Paint():
 
     def eraser(self):
         self.canvas.config(cursor="dotbox")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<ButtonRelease-1>", self.reset)
         self.pen_color = self.eraser_color
