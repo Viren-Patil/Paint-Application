@@ -11,13 +11,16 @@ class Paint():
     def __init__(self, root):
         self.root = root
         self.root.title("Paint Application")
-        self.root.geometry("900x700")
+        self.root.geometry("900x750")
         self.root.configure(background='white')
         self.stack = []
         self.item = None
 
         self.old_x = None
         self.old_y = None
+
+        self.old_x_arrow = None
+        self.old_y_arrow = None
 
         self.width_val = self.root.winfo_screenwidth()
         self.height_val = self.root.winfo_screenheight()
@@ -60,28 +63,34 @@ class Paint():
         self.line_button.grid(row=3, column=0)
         self.line_button.config(cursor="hand2")
         self.line_button_tooltip = CreateToolTip(self.line_button, 'Straight Line')
+
+        self.line_arrow_image = PhotoImage(file='arrows.png')
+        self.line_arrow_button = Button(self.root, image=self.line_arrow_image, command=self._createArrowLine, width=64)
+        self.line_arrow_button.grid(row=4, column=0)
+        self.line_arrow_button.config(cursor="hand2")
+        self.line_arrow_button_tooltip = CreateToolTip(self.line_arrow_button, 'Straight Line with Arrow')
         
         self.rectangle_image = PhotoImage(file='rectangle.png')
         self.rectangle_button = Button(self.root, image=self.rectangle_image, command=self._createRectangle, width=64)
-        self.rectangle_button.grid(row=4, column=0)
+        self.rectangle_button.grid(row=5, column=0)
         self.rectangle_button.config(cursor="hand2")
         self.rectangle_button_tooltip = CreateToolTip(self.rectangle_button, 'Rectangle and Square')
 
         self.oval_image = PhotoImage(file='oval.png')
         self.oval_button = Button(self.root, image=self.oval_image, command=self._createOval, width=64)
-        self.oval_button.grid(row=5, column=0)
+        self.oval_button.grid(row=6, column=0)
         self.oval_button.config(cursor="hand2")
         self.oval_button_tooltip = CreateToolTip(self.oval_button, 'Oval and Circle')
 
         self.pencil_image = PhotoImage(file='pencil.png')
         self.pencil_button = Button(self.root, image=self.pencil_image, command=self._pencil, width=64)
-        self.pencil_button.grid(row=6, column=0)
+        self.pencil_button.grid(row=7, column=0)
         self.pencil_button.config(cursor="hand2")
         self.pencil_button_tooltip = CreateToolTip(self.pencil_button, 'Pencil')
 
         self.undo_image = PhotoImage(file='undo.png')
         self.undo_button = Button(self.root, image=self.undo_image, command=self.undo, width=64)
-        self.undo_button.grid(row=7, column=0)
+        self.undo_button.grid(row=9, column=0)
         self.undo_button.config(cursor="hand2")
         self.undo_button_tooltip = CreateToolTip(self.undo_button, 'Undo')
 
@@ -95,9 +104,9 @@ class Paint():
         # Creating a Scale for pen and eraser size...
 
         self.pen_size_scale_frame = Frame(self.root, bd=5, bg='lightblue', relief=RIDGE)
-        self.pen_size_scale_frame.grid(row=8, column=0,  pady=5)
+        self.pen_size_scale_frame.grid(row=10, column=0,  pady=5)
         
-        self.pen_size = Scale(self.pen_size_scale_frame, orient = VERTICAL, from_ = 50, to = 2, length=200)
+        self.pen_size = Scale(self.pen_size_scale_frame, orient = VERTICAL, from_ = 30, to = 2, length=170)
         self.pen_size_tooltip = CreateToolTip(self.pen_size, 'Adjust the size of pen and eraser using this slider.')
         self.pen_size.set(1)
         self.pen_size.grid(row=0, column=1, padx=15, pady=5)
@@ -113,8 +122,7 @@ class Paint():
         self.canvas.bind("<ButtonRelease-1>", self.reset)
 
         self.msg = tk.Message(self.root, text = self.choice)
-        self.msg.grid(row = 9, column = 0, pady = (20, 0))
-        
+        self.msg.grid(row = 11, column = 0, pady=(20,0))
 
         menu = Menu(self.root)
         self.root.config(menu=menu)
@@ -274,6 +282,52 @@ class Paint():
         self.stack.append('$')            # Delimeter
 
 
+    def _createArrowLine(self):
+        self.choice = 'Arrow Line'
+        self.choice_disp()
+        self.linex0 = 0
+        self.liney0 = 0
+        self.linex1 = 0
+        self.liney1 = 0
+        self.lineid = None
+        self.pen_color = self.save_color
+        self.canvas.config(cursor="tcross")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
+        self.canvas.bind( "<Button-1>", self.startArrowLine )
+        self.canvas.bind( "<ButtonRelease-1>", self.stopArrowLine )
+        self.canvas.bind( "<B1-Motion>", self.movingArrowLine )
+
+    def startArrowLine(self, event):
+        #Translate mouse screen x0,y0 coordinates to canvas coordinates
+        self.linex0 = self.canvas.canvasx(event.x)
+        self.liney0 = self.canvas.canvasy(event.y) 
+        #Create rectangle
+        self.lineid = self.canvas.create_line(
+            self.linex0, self.liney0, self.linex0, self.liney0, fill=self.pen_color, arrow="last", 
+            arrowshape=(10,10,5), width = self.pen_size.get(), smooth=True, capstyle=ROUND)
+
+    def movingArrowLine(self, event):
+        #Translate mouse screen x1,y1 coordinates to canvas coordinates
+        self.linex1 = self.canvas.canvasx(event.x)
+        self.liney1 = self.canvas.canvasy(event.y)
+        #Modify rectangle x1, y1 coordinates
+        self.canvas.coords(self.lineid, self.linex0, self.liney0,
+                      self.linex1, self.liney1)
+
+    def stopArrowLine(self, event):
+        #Translate mouse screen x1,y1 coordinates to canvas coordinates
+        self.linex1 = self.canvas.canvasx(event.x)
+        self.liney1 = self.canvas.canvasy(event.y)
+        #Modify rectangle x1, y1 coordinates
+        self.canvas.coords(self.lineid, self.linex0, self.liney0,
+                      self.linex1, self.liney1)
+        
+        self.stack.append(self.lineid)
+        self.stack.append('$')            # Delimeter
+
+
     def _pencil(self):
         self.choice = 'Pencil'
         self.choice_disp()
@@ -284,6 +338,17 @@ class Paint():
         self.canvas.unbind("<B1-Motion>")
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<ButtonRelease-1>", self.reset)
+
+    def _pencilArrow(self):
+        self.choice = 'Pencil with\nArrow'
+        self.choice_disp()
+        self.pen_color = self.save_color
+        self.canvas.config(cursor="crosshair")
+        self.canvas.unbind("<Button-1>")
+        self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.unbind("<B1-Motion>")
+        self.canvas.bind("<B1-Motion>", self.paint_arrow)
+        self.canvas.bind("<ButtonRelease-1>", self.reset_arrow)
 
     def undo(self):
 
@@ -315,18 +380,19 @@ class Paint():
     def paint(self, event):
 
         if self.old_x and self.old_y:
-            self.stack.append(self.canvas.create_line(self.old_x,self.old_y,event.x,event.y,width=self.pen_size.get(),fill=self.pen_color,capstyle=ROUND,smooth=True))
+            self.stack.append(self.canvas.create_line(self.old_x,self.old_y,event.x,event.y,
+            width=self.pen_size.get(),fill=self.pen_color,capstyle=ROUND,smooth=True))
 
         self.old_x = event.x
         self.old_y = event.y
-        
+
 
     def reset(self,e):    # Resetting 
         
         self.old_x = None
         self.old_y = None
         self.stack.append('#')
-
+    
 
     def select_color(self, col):
         self.pen_color = col
